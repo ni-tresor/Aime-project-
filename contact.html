@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="rw">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Twandikire – Aime Projects</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to right, #1e3c72, #2a5298);
+      color: #fff;
+    }
+
+    header {
+      background-color: rgba(0, 0, 0, 0.3);
+      padding: 10px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .logo {
+      width: 80px;
+      margin-bottom: 10px;
+    }
+
+    nav {
+      margin-top: 10px;
+    }
+
+    nav a {
+      color: #fff;
+      text-decoration: none;
+      margin: 0 10px;
+      font-weight: bold;
+    }
+
+    nav a.active {
+      text-decoration: underline;
+    }
+
+    .contact-section {
+      padding: 30px 20px;
+      max-width: 900px;
+      margin: auto;
+      background-color: rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+      margin-top: 20px;
+    }
+
+    .contact-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 30px;
+    }
+
+    form {
+      flex: 1;
+      min-width: 280px;
+    }
+
+    form label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    form input,
+    form textarea {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+
+    form button {
+      background-color: #00cfff;
+      color: black;
+      font-weight: bold;
+      border: none;
+      padding: 10px 20px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    .contact-info {
+      flex: 1;
+      min-width: 280px;
+      background-color: rgba(255, 255, 255, 0.1);
+      padding: 15px;
+      border-radius: 10px;
+    }
+
+    .contact-info p {
+      margin: 10px 0;
+    }
+
+    footer {
+      margin-top: 40px;
+      text-align: center;
+      padding: 15px;
+      background-color: rgba(0, 0, 0, 0.2);
+    }
+
+    a {
+      color: #a7f3ff;
+    }
+
+    @media (max-width: 768px) {
+      .contact-container {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <img src="APR_logo.jpg" alt="Aime Projects Logo" class="logo">
+    <h1>Aime Projects</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="AimeBot.html">AimeBot</a>
+      <a href="about.html">About</a><br><br>
+      <a href="service.html">Services</a>
+      <a href="contact.html" >Contact</a>
+    </nav>
+  </header>
+
+  <section class="contact-section">
+    <h2>Twandikire</h2>
+    <p>Ufite ikibazo cyangwa igitekerezo? Twohereze ubutumwa!</p>
+
+    <div class="contact-container">
+      <form action="#">
+        <label for="name">Izina ryawe:</label>
+        <input type="text" id="name" name="name" placeholder="Andika izina..." required>
+
+        <label for="email">Email yawe:</label>
+        <input type="email" id="email" name="email" placeholder="Andika email..." required>
+
+        <label for="message">Ubutumwa:</label>
+        <textarea id="message" name="message" rows="5" placeholder="Andika ubutumwa bwawe..." required></textarea>
+
+        <button type="submit">Ohereza</button>
+      </form>
+
+      <div class="contact-info">
+        <h3>Aho utwandikira:</h3>
+        <p><strong>Email:</strong> <a href="mailto:nibitangaaime597@gmail.com">nibitangaaime597@gmail.com</a></p>
+        <p><strong>Tel:</strong> <a href="tel:+250735941430">0735941430</a></p>
+        <p><strong>WhatsApp:</strong> +250 735 941 430</p>
+        <p><strong>Facebook:</strong> Aime Projects</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>&copy; 2025 Aime Projects. By Nibitanga Aime Trésor</p>
+  </footer>
+</body>
+</html>
