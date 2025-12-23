@@ -1,0 +1,1490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- PWA Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#1a1a2e">
+    
+    <!-- SEO & App Info -->
+    <title>CalcPro - Scientific Calculator PWA</title>
+    <meta name="description" content="A professional scientific calculator Progressive Web App that works offline">
+    <meta name="keywords" content="calculator, scientific, PWA, offline, math, web app">
+    
+    <!-- Favicon & App Icons -->
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧮</text></svg>">
+    
+    <!-- iOS App Icons -->
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧮</text></svg>">
+    
+    <!-- Manifest -->
+    <link rel="manifest" id="manifest-placeholder">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            padding: 20px;
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+        
+        /* App Container */
+        .app-container {
+            width: 100%;
+            max-width: 500px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.4),
+                0 0 0 1px rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        
+        /* App Header */
+        .app-header {
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+        
+        .app-title {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .app-icon {
+            font-size: 1.8rem;
+        }
+        
+        /* App Controls */
+        .app-controls {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .control-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+        
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+        }
+        
+        /* Install Banner */
+        .install-banner {
+            background: linear-gradient(135deg, #4361ee, #3a0ca3);
+            color: white;
+            padding: 12px 20px;
+            display: none;
+            justify-content: space-between;
+            align-items: center;
+            animation: slideDown 0.3s ease;
+        }
+        
+        @keyframes slideDown {
+            from { transform: translateY(-100%); }
+            to { transform: translateY(0); }
+        }
+        
+        .install-text {
+            font-size: 0.9rem;
+        }
+        
+        .install-btn {
+            background: white;
+            color: #4361ee;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        
+        .install-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .close-install {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        
+        /* Main Content */
+        .app-content {
+            padding: 20px;
+        }
+        
+        /* Display */
+        .display-container {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            min-height: 140px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        
+        .expression-display {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.1rem;
+            min-height: 27px;
+            word-break: break-all;
+            text-align: right;
+        }
+        
+        .result-display {
+            color: white;
+            font-size: 2.8rem;
+            font-weight: 300;
+            text-align: right;
+            word-break: break-all;
+            line-height: 1.2;
+        }
+        
+        /* Tabs */
+        .tab-container {
+            display: flex;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 4px;
+            margin-bottom: 20px;
+        }
+        
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 500;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .tab-btn.active {
+            background: rgba(67, 97, 238, 0.3);
+            color: white;
+        }
+        
+        /* Keyboard */
+        .keyboard {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+        }
+        
+        /* For mobile, adjust button size */
+        @media (max-width: 500px) {
+            .keyboard {
+                gap: 8px;
+            }
+        }
+        
+        .key {
+            height: 65px;
+            border-radius: 12px;
+            border: none;
+            font-size: 1.3rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        
+        .key:active {
+            transform: scale(0.95);
+        }
+        
+        /* Button Types */
+        .number-key {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        
+        .number-key:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        .operator-key {
+            background: rgba(67, 97, 238, 0.2);
+            color: #4cc9f0;
+        }
+        
+        .operator-key:hover {
+            background: rgba(67, 97, 238, 0.3);
+        }
+        
+        .function-key {
+            background: rgba(108, 99, 255, 0.2);
+            color: #9d4edd;
+        }
+        
+        .function-key:hover {
+            background: rgba(108, 99, 255, 0.3);
+        }
+        
+        .scientific-key {
+            background: rgba(77, 201, 240, 0.15);
+            color: #4cc9f0;
+            font-size: 1.1rem;
+        }
+        
+        .scientific-key:hover {
+            background: rgba(77, 201, 240, 0.25);
+        }
+        
+        .equals-key {
+            background: linear-gradient(135deg, #4361ee, #3a0ca3);
+            color: white;
+            grid-column: span 2;
+        }
+        
+        .equals-key:hover {
+            background: linear-gradient(135deg, #3a56d4, #2d0a8a);
+        }
+        
+        .clear-key {
+            background: rgba(255, 107, 107, 0.2);
+            color: #ff6b6b;
+        }
+        
+        .clear-key:hover {
+            background: rgba(255, 107, 107, 0.3);
+        }
+        
+        .zero-key {
+            grid-column: span 2;
+        }
+        
+        /* Tabs Content */
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        /* Memory Panel */
+        .memory-panel {
+            margin-top: 25px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .memory-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .memory-header h3 {
+            color: white;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .memory-controls {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .memory-list {
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        
+        .memory-item {
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1rem;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .memory-item:last-child {
+            border-bottom: none;
+        }
+        
+        .memory-expression {
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .memory-value {
+            color: #4cc9f0;
+            font-weight: 500;
+        }
+        
+        /* Footer */
+        .app-footer {
+            padding: 15px 20px;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .connection-status {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .online-dot {
+            width: 8px;
+            height: 8px;
+            background: #4ade80;
+            border-radius: 50%;
+        }
+        
+        .offline-dot {
+            width: 8px;
+            height: 8px;
+            background: #f87171;
+            border-radius: 50%;
+        }
+        
+        /* Toast Notifications */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            display: none;
+            align-items: center;
+            gap: 10px;
+            z-index: 1000;
+            animation: slideUp 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(100px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .toast.show {
+            display: flex;
+        }
+        
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0f0c29;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            transition: opacity 0.5s ease;
+        }
+        
+        .loader {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top-color: #4361ee;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .loading-text {
+            color: white;
+            font-size: 1.2rem;
+        }
+        
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: rgba(67, 97, 238, 0.5);
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loader"></div>
+        <div class="loading-text">Loading CalcPro...</div>
+    </div>
+    
+    <!-- App Container -->
+    <div class="app-container">
+        <!-- Install Banner -->
+        <div class="install-banner" id="installBanner">
+            <div class="install-text">Install CalcPro for a better experience</div>
+            <div>
+                <button class="install-btn" id="installButton">Install</button>
+                <button class="close-install" id="closeInstall">&times;</button>
+            </div>
+        </div>
+        
+        <!-- App Header -->
+        <div class="app-header">
+            <div class="app-title">
+                <span class="app-icon">🧮</span>
+                <span>CalcPro</span>
+            </div>
+            <div class="app-controls">
+                <button class="control-btn" id="themeToggle" title="Toggle theme">🌓</button>
+                <button class="control-btn" id="fullscreenToggle" title="Fullscreen">⛶</button>
+                <button class="control-btn" id="helpBtn" title="Help">?</button>
+            </div>
+        </div>
+        
+        <!-- App Content -->
+        <div class="app-content">
+            <!-- Display -->
+            <div class="display-container">
+                <div class="expression-display" id="expressionDisplay"></div>
+                <div class="result-display" id="resultDisplay">0</div>
+            </div>
+            
+            <!-- Tabs -->
+            <div class="tab-container">
+                <button class="tab-btn active" data-tab="basic">Basic</button>
+                <button class="tab-btn" data-tab="scientific">Scientific</button>
+                <button class="tab-btn" data-tab="programmer">Programmer</button>
+            </div>
+            
+            <!-- Basic Calculator -->
+            <div class="tab-content active" id="basic-tab">
+                <div class="keyboard" id="basicKeyboard">
+                    <!-- Row 1 -->
+                    <button class="key clear-key" data-action="clear">C</button>
+                    <button class="key clear-key" data-action="clear-entry">CE</button>
+                    <button class="key function-key" data-action="backspace">⌫</button>
+                    <button class="key operator-key" data-action="divide">÷</button>
+                    <button class="key scientific-key" data-action="sqrt">√</button>
+                    
+                    <!-- Row 2 -->
+                    <button class="key scientific-key" data-action="square">x²</button>
+                    <button class="key number-key" data-number="7">7</button>
+                    <button class="key number-key" data-number="8">8</button>
+                    <button class="key number-key" data-number="9">9</button>
+                    <button class="key operator-key" data-action="multiply">×</button>
+                    
+                    <!-- Row 3 -->
+                    <button class="key scientific-key" data-action="percent">%</button>
+                    <button class="key number-key" data-number="4">4</button>
+                    <button class="key number-key" data-number="5">5</button>
+                    <button class="key number-key" data-number="6">6</button>
+                    <button class="key operator-key" data-action="subtract">−</button>
+                    
+                    <!-- Row 4 -->
+                    <button class="key scientific-key" data-action="inverse">1/x</button>
+                    <button class="key number-key" data-number="1">1</button>
+                    <button class="key number-key" data-number="2">2</button>
+                    <button class="key number-key" data-number="3">3</button>
+                    <button class="key operator-key" data-action="add">+</button>
+                    
+                    <!-- Row 5 -->
+                    <button class="key scientific-key" data-action="toggle-sign">±</button>
+                    <button class="key number-key zero-key" data-number="0">0</button>
+                    <button class="key number-key" data-number=".">.</button>
+                    <button class="key equals-key" data-action="equals">=</button>
+                </div>
+            </div>
+            
+            <!-- Scientific Calculator -->
+            <div class="tab-content" id="scientific-tab">
+                <div class="keyboard" id="scientificKeyboard">
+                    <!-- Scientific functions will be loaded here -->
+                </div>
+            </div>
+            
+            <!-- Programmer Calculator -->
+            <div class="tab-content" id="programmer-tab">
+                <div class="keyboard" id="programmerKeyboard">
+                    <!-- Programmer functions will be loaded here -->
+                </div>
+            </div>
+            
+            <!-- Memory Panel -->
+            <div class="memory-panel">
+                <div class="memory-header">
+                    <h3><span>💾</span> Memory</h3>
+                    <div class="memory-controls">
+                        <button class="control-btn" data-memory="mc" title="Memory Clear">MC</button>
+                        <button class="control-btn" data-memory="mr" title="Memory Recall">MR</button>
+                        <button class="control-btn" data-memory="m+" title="Memory Add">M+</button>
+                        <button class="control-btn" data-memory="m-" title="Memory Subtract">M-</button>
+                        <button class="control-btn" data-memory="ms" title="Memory Store">MS</button>
+                    </div>
+                </div>
+                <div class="memory-list" id="memoryList">
+                    <!-- Memory items will be added here -->
+                    <div class="memory-item">
+                        <span class="memory-expression">Empty</span>
+                        <span class="memory-value">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- App Footer -->
+        <div class="app-footer">
+            <div class="connection-status">
+                <span id="connectionDot" class="online-dot"></span>
+                <span id="connectionText">Online</span>
+            </div>
+            <div>CalcPro Web App v1.0</div>
+            <div id="lastSaved">Auto-saved</div>
+        </div>
+    </div>
+    
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <span id="toastIcon">ℹ️</span>
+        <span id="toastMessage">Notification</span>
+    </div>
+
+    <script>
+        // ===================
+        // PWA & APP CONFIG
+        // ===================
+        const APP_NAME = 'CalcPro';
+        const APP_VERSION = '1.0.0';
+        const CACHE_NAME = 'calcpro-v1';
+        
+        // ===================
+        // APP STATE
+        // ===================
+        let calculatorState = {
+            currentValue: '0',
+            expression: '',
+            operator: null,
+            waitingForOperand: false,
+            memory: 0,
+            memoryItems: [],
+            lastResult: null,
+            isDarkMode: true,
+            currentTab: 'basic'
+        };
+        
+        // ===================
+        // DOM ELEMENTS
+        // ===================
+        const elements = {
+            resultDisplay: document.getElementById('resultDisplay'),
+            expressionDisplay: document.getElementById('expressionDisplay'),
+            loadingOverlay: document.getElementById('loadingOverlay'),
+            installBanner: document.getElementById('installBanner'),
+            installButton: document.getElementById('installButton'),
+            closeInstall: document.getElementById('closeInstall'),
+            themeToggle: document.getElementById('themeToggle'),
+            fullscreenToggle: document.getElementById('fullscreenToggle'),
+            helpBtn: document.getElementById('helpBtn'),
+            toast: document.getElementById('toast'),
+            toastIcon: document.getElementById('toastIcon'),
+            toastMessage: document.getElementById('toastMessage'),
+            connectionDot: document.getElementById('connectionDot'),
+            connectionText: document.getElementById('connectionText'),
+            lastSaved: document.getElementById('lastSaved'),
+            memoryList: document.getElementById('memoryList')
+        };
+        
+        // ===================
+        // PWA INSTALLATION
+        // ===================
+        let deferredPrompt;
+        
+        // Listen for beforeinstallprompt event
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            // Show install banner after 3 seconds
+            setTimeout(() => {
+                if (deferredPrompt && !isAppInstalled()) {
+                    elements.installBanner.style.display = 'flex';
+                }
+            }, 3000);
+        });
+        
+        // Install button click
+        elements.installButton.addEventListener('click', async () => {
+            if (!deferredPrompt) return;
+            
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            
+            if (outcome === 'accepted') {
+                showToast('✅', 'CalcPro installed successfully!');
+                elements.installBanner.style.display = 'none';
+            }
+            
+            deferredPrompt = null;
+        });
+        
+        // Close install banner
+        elements.closeInstall.addEventListener('click', () => {
+            elements.installBanner.style.display = 'none';
+        });
+        
+        // Check if app is installed
+        function isAppInstalled() {
+            return window.matchMedia('(display-mode: standalone)').matches || 
+                   window.navigator.standalone ||
+                   document.referrer.includes('android-app://');
+        }
+        
+        // ===================
+        // SERVICE WORKER
+        // ===================
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').then(
+                    (registration) => {
+                        console.log('ServiceWorker registered:', registration.scope);
+                    },
+                    (error) => {
+                        console.log('ServiceWorker registration failed:', error);
+                    }
+                );
+            });
+        }
+        
+        // Create manifest dynamically
+        const manifest = {
+            "name": APP_NAME,
+            "short_name": "CalcPro",
+            "description": "Professional Scientific Calculator PWA",
+            "start_url": ".",
+            "display": "standalone",
+            "background_color": "#1a1a2e",
+            "theme_color": "#1a1a2e",
+            "orientation": "portrait-primary",
+            "icons": [
+                {
+                    "src": "data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧮</text></svg>",
+                    "sizes": "192x192",
+                    "type": "image/svg+xml"
+                },
+                {
+                    "src": "data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧮</text></svg>",
+                    "sizes": "512x512",
+                    "type": "image/svg+xml"
+                }
+            ]
+        };
+        
+        // Create manifest link dynamically
+        const manifestBlob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
+        const manifestURL = URL.createObjectURL(manifestBlob);
+        document.getElementById('manifest-placeholder').href = manifestURL;
+        
+        // ===================
+        // OFFLINE DETECTION
+        // ===================
+        function updateOnlineStatus() {
+            if (navigator.onLine) {
+                elements.connectionDot.className = 'online-dot';
+                elements.connectionText.textContent = 'Online';
+                showToast('🌐', 'Back online');
+            } else {
+                elements.connectionDot.className = 'offline-dot';
+                elements.connectionText.textContent = 'Offline';
+                showToast('📴', 'Working offline');
+            }
+        }
+        
+        window.addEventListener('online', updateOnlineStatus);
+        window.addEventListener('offline', updateOnlineStatus);
+        updateOnlineStatus();
+        
+        // ===================
+        // CALCULATOR ENGINE
+        // ===================
+        class CalculatorEngine {
+            static add(a, b) {
+                return a + b;
+            }
+            
+            static subtract(a, b) {
+                return a - b;
+            }
+            
+            static multiply(a, b) {
+                return a * b;
+            }
+            
+            static divide(a, b) {
+                if (b === 0) throw new Error('Division by zero');
+                return a / b;
+            }
+            
+            static percentage(a) {
+                return a / 100;
+            }
+            
+            static square(a) {
+                return a * a;
+            }
+            
+            static sqrt(a) {
+                if (a < 0) throw new Error('Invalid input');
+                return Math.sqrt(a);
+            }
+            
+            static sin(a, useRadians = false) {
+                return useRadians ? Math.sin(a) : Math.sin(a * Math.PI / 180);
+            }
+            
+            static cos(a, useRadians = false) {
+                return useRadians ? Math.cos(a) : Math.cos(a * Math.PI / 180);
+            }
+            
+            static tan(a, useRadians = false) {
+                return useRadians ? Math.tan(a) : Math.tan(a * Math.PI / 180);
+            }
+            
+            static log(a) {
+                if (a <= 0) throw new Error('Invalid input');
+                return Math.log10(a);
+            }
+            
+            static ln(a) {
+                if (a <= 0) throw new Error('Invalid input');
+                return Math.log(a);
+            }
+            
+            static factorial(a) {
+                if (!Number.isInteger(a) || a < 0) throw new Error('Invalid input');
+                if (a === 0 || a === 1) return 1;
+                let result = 1;
+                for (let i = 2; i <= a; i++) result *= i;
+                return result;
+            }
+            
+            static power(a, b) {
+                return Math.pow(a, b);
+            }
+            
+            static inverse(a) {
+                if (a === 0) throw new Error('Division by zero');
+                return 1 / a;
+            }
+        }
+        
+        // ===================
+        // CALCULATOR FUNCTIONS
+        // ===================
+        function appendNumber(number) {
+            const { currentValue, waitingForOperand } = calculatorState;
+            
+            if (waitingForOperand) {
+                calculatorState.currentValue = String(number);
+                calculatorState.waitingForOperand = false;
+            } else {
+                calculatorState.currentValue = currentValue === '0' ? 
+                    String(number) : currentValue + number;
+            }
+            
+            updateDisplay();
+        }
+        
+        function appendDecimal() {
+            const { currentValue, waitingForOperand } = calculatorState;
+            
+            if (waitingForOperand) {
+                calculatorState.currentValue = '0.';
+                calculatorState.waitingForOperand = false;
+            } else if (!currentValue.includes('.')) {
+                calculatorState.currentValue += '.';
+            }
+            
+            updateDisplay();
+        }
+        
+        function setOperator(nextOperator) {
+            const { currentValue, expression, operator, lastResult } = calculatorState;
+            const inputValue = parseFloat(currentValue);
+            
+            if (expression && operator && !calculatorState.waitingForOperand) {
+                const currentResult = calculate(lastResult || 0, inputValue, operator);
+                calculatorState.currentValue = String(currentResult);
+                calculatorState.lastResult = currentResult;
+                calculatorState.expression = `${currentResult} ${nextOperator}`;
+            } else {
+                calculatorState.expression = `${currentValue} ${nextOperator}`;
+                calculatorState.lastResult = inputValue;
+            }
+            
+            calculatorState.waitingForOperand = true;
+            calculatorState.operator = nextOperator;
+            updateDisplay();
+        }
+        
+        function calculate(a, b, operator) {
+            a = parseFloat(a);
+            b = parseFloat(b);
+            
+            switch (operator) {
+                case '+': return CalculatorEngine.add(a, b);
+                case '−': return CalculatorEngine.subtract(a, b);
+                case '×': return CalculatorEngine.multiply(a, b);
+                case '÷': return CalculatorEngine.divide(a, b);
+                case '^': return CalculatorEngine.power(a, b);
+                default: return b;
+            }
+        }
+        
+        function performEquals() {
+            const { currentValue, expression, operator, lastResult } = calculatorState;
+            
+            if (!operator || calculatorState.waitingForOperand) return;
+            
+            const inputValue = parseFloat(currentValue);
+            const result = calculate(lastResult || 0, inputValue, operator);
+            
+            // Add to memory items
+            addToMemory(`${expression} ${currentValue} = ${result}`);
+            
+            calculatorState.currentValue = String(result);
+            calculatorState.expression = '';
+            calculatorState.operator = null;
+            calculatorState.waitingForOperand = true;
+            calculatorState.lastResult = result;
+            
+            updateDisplay();
+            showToast('✅', 'Calculation saved to memory');
+            saveState();
+        }
+        
+        function clearCalculator() {
+            calculatorState.currentValue = '0';
+            calculatorState.expression = '';
+            calculatorState.operator = null;
+            calculatorState.waitingForOperand = false;
+            calculatorState.lastResult = null;
+            updateDisplay();
+        }
+        
+        function clearEntry() {
+            calculatorState.currentValue = '0';
+            updateDisplay();
+        }
+        
+        function deleteLast() {
+            const { currentValue } = calculatorState;
+            
+            if (currentValue.length > 1) {
+                calculatorState.currentValue = currentValue.slice(0, -1);
+            } else {
+                calculatorState.currentValue = '0';
+            }
+            
+            updateDisplay();
+        }
+        
+        function toggleSign() {
+            const { currentValue } = calculatorState;
+            
+            if (currentValue !== '0') {
+                calculatorState.currentValue = currentValue.startsWith('-') ? 
+                    currentValue.slice(1) : '-' + currentValue;
+                updateDisplay();
+            }
+        }
+        
+        function performScientificFunction(func) {
+            const { currentValue } = calculatorState;
+            const inputValue = parseFloat(currentValue);
+            
+            try {
+                let result;
+                
+                switch (func) {
+                    case 'percent':
+                        result = CalculatorEngine.percentage(inputValue);
+                        break;
+                    case 'square':
+                        result = CalculatorEngine.square(inputValue);
+                        break;
+                    case 'sqrt':
+                        result = CalculatorEngine.sqrt(inputValue);
+                        break;
+                    case 'inverse':
+                        result = CalculatorEngine.inverse(inputValue);
+                        break;
+                    case 'sin':
+                        result = CalculatorEngine.sin(inputValue, false);
+                        break;
+                    case 'cos':
+                        result = CalculatorEngine.cos(inputValue, false);
+                        break;
+                    case 'tan':
+                        result = CalculatorEngine.tan(inputValue, false);
+                        break;
+                    case 'log':
+                        result = CalculatorEngine.log(inputValue);
+                        break;
+                    case 'ln':
+                        result = CalculatorEngine.ln(inputValue);
+                        break;
+                    case 'factorial':
+                        result = CalculatorEngine.factorial(inputValue);
+                        break;
+                    case 'pi':
+                        result = Math.PI;
+                        break;
+                    case 'e':
+                        result = Math.E;
+                        break;
+                    default:
+                        return;
+                }
+                
+                // Add to memory items
+                addToMemory(`${func}(${currentValue}) = ${result}`);
+                
+                calculatorState.currentValue = String(result);
+                calculatorState.waitingForOperand = true;
+                updateDisplay();
+                saveState();
+                
+            } catch (error) {
+                showToast('❌', error.message);
+            }
+        }
+        
+        // ===================
+        // MEMORY FUNCTIONS
+        // ===================
+        function memoryClear() {
+            calculatorState.memory = 0;
+            showToast('💾', 'Memory cleared');
+            saveState();
+        }
+        
+        function memoryRecall() {
+            if (calculatorState.memory !== 0) {
+                calculatorState.currentValue = String(calculatorState.memory);
+                updateDisplay();
+                showToast('💾', 'Memory recalled');
+            }
+        }
+        
+        function memoryAdd() {
+            const currentValue = parseFloat(calculatorState.currentValue) || 0;
+            calculatorState.memory += currentValue;
+            showToast('💾', `Added to memory (M = ${calculatorState.memory})`);
+            saveState();
+        }
+        
+        function memorySubtract() {
+            const currentValue = parseFloat(calculatorState.currentValue) || 0;
+            calculatorState.memory -= currentValue;
+            showToast('💾', `Subtracted from memory (M = ${calculatorState.memory})`);
+            saveState();
+        }
+        
+        function memoryStore() {
+            const currentValue = parseFloat(calculatorState.currentValue) || 0;
+            calculatorState.memory = currentValue;
+            showToast('💾', `Value stored in memory (M = ${calculatorState.memory})`);
+            saveState();
+        }
+        
+        function addToMemory(calculation) {
+            calculatorState.memoryItems.unshift({
+                expression: calculation.split(' = ')[0],
+                value: calculation.split(' = ')[1],
+                timestamp: new Date().toLocaleTimeString()
+            });
+            
+            // Keep only last 10 items
+            if (calculatorState.memoryItems.length > 10) {
+                calculatorState.memoryItems.pop();
+            }
+            
+            updateMemoryDisplay();
+            saveState();
+        }
+        
+        function updateMemoryDisplay() {
+            const { memoryItems, memory } = calculatorState;
+            elements.memoryList.innerHTML = '';
+            
+            if (memoryItems.length === 0) {
+                const emptyItem = document.createElement('div');
+                emptyItem.className = 'memory-item';
+                emptyItem.innerHTML = `
+                    <span class="memory-expression">Empty</span>
+                    <span class="memory-value">0</span>
+                `;
+                elements.memoryList.appendChild(emptyItem);
+            } else {
+                memoryItems.forEach(item => {
+                    const memoryItem = document.createElement('div');
+                    memoryItem.className = 'memory-item';
+                    memoryItem.innerHTML = `
+                        <span class="memory-expression">${item.expression}</span>
+                        <span class="memory-value">${item.value}</span>
+                    `;
+                    elements.memoryList.appendChild(memoryItem);
+                });
+            }
+            
+            // Update last saved time
+            elements.lastSaved.textContent = `M: ${memory}`;
+        }
+        
+        // ===================
+        // DISPLAY FUNCTIONS
+        // ===================
+        function updateDisplay() {
+            const { currentValue, expression } = calculatorState;
+            elements.resultDisplay.textContent = formatNumber(currentValue);
+            elements.expressionDisplay.textContent = expression;
+        }
+        
+        function formatNumber(number) {
+            const num = parseFloat(number);
+            if (isNaN(num)) return '0';
+            
+            // Format large numbers with scientific notation
+            if (Math.abs(num) >= 1e12 || (Math.abs(num) < 1e-6 && num !== 0)) {
+                return num.toExponential(6).replace('e+', 'e');
+            }
+            
+            // Format regular numbers
+            const str = num.toString();
+            if (str.includes('.')) {
+                const [integer, decimal] = str.split('.');
+                if (decimal.length > 8) {
+                    return num.toFixed(8).replace(/\.?0+$/, '');
+                }
+            }
+            
+            return str;
+        }
+        
+        // ===================
+        // UI FUNCTIONS
+        // ===================
+        function showToast(icon, message) {
+            elements.toastIcon.textContent = icon;
+            elements.toastMessage.textContent = message;
+            elements.toast.classList.add('show');
+            
+            setTimeout(() => {
+                elements.toast.classList.remove('show');
+            }, 3000);
+        }
+        
+        function toggleTheme() {
+            calculatorState.isDarkMode = !calculatorState.isDarkMode;
+            const body = document.body;
+            
+            if (calculatorState.isDarkMode) {
+                body.style.background = 'linear-gradient(135deg, #0f0c29, #302b63, #24243e)';
+                showToast('🌙', 'Dark mode enabled');
+            } else {
+                body.style.background = 'linear-gradient(135deg, #E3F2FD, #BBDEFB, #90CAF9)';
+                showToast('☀️', 'Light mode enabled');
+            }
+            
+            saveState();
+        }
+        
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(console.log);
+                showToast('⛶', 'Fullscreen enabled');
+            } else {
+                document.exitFullscreen();
+                showToast('⛶', 'Fullscreen disabled');
+            }
+        }
+        
+        function showHelp() {
+            showToast('📘', 'Tap buttons or use keyboard. Install for offline use.');
+        }
+        
+        // ===================
+        // TAB MANAGEMENT
+        // ===================
+        function switchTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.tab === tabName) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+                if (content.id === `${tabName}-tab`) {
+                    content.classList.add('active');
+                }
+            });
+            
+            calculatorState.currentTab = tabName;
+            saveState();
+        }
+        
+        // ===================
+        // STATE PERSISTENCE
+        // ===================
+        function saveState() {
+            try {
+                localStorage.setItem('calcpro-state', JSON.stringify(calculatorState));
+                elements.lastSaved.textContent = `Saved ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+            } catch (error) {
+                console.log('Failed to save state:', error);
+            }
+        }
+        
+        function loadState() {
+            try {
+                const saved = localStorage.getItem('calcpro-state');
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    Object.assign(calculatorState, parsed);
+                    updateDisplay();
+                    updateMemoryDisplay();
+                    
+                    if (!calculatorState.isDarkMode) {
+                        toggleTheme();
+                    }
+                    
+                    // Switch to saved tab
+                    if (calculatorState.currentTab) {
+                        switchTab(calculatorState.currentTab);
+                    }
+                }
+            } catch (error) {
+                console.log('Failed to load state:', error);
+            }
+        }
+        
+        // ===================
+        // KEYBOARD SUPPORT
+        // ===================
+        function handleKeyboardInput(event) {
+            const key = event.key;
+            
+            // Prevent default for calculator keys
+            if (/[\d+\-*/.=]/.test(key) || 
+                ['Enter', 'Escape', 'Backspace', '%'].includes(key)) {
+                event.preventDefault();
+            }
+            
+            // Numbers
+            if (key >= '0' && key <= '9') {
+                appendNumber(key);
+                return;
+            }
+            
+            // Decimal
+            if (key === '.' || key === ',') {
+                appendDecimal();
+                return;
+            }
+            
+            // Operators
+            if (key === '+') {
+                setOperator('+');
+                return;
+            }
+            
+            if (key === '-') {
+                setOperator('−');
+                return;
+            }
+            
+            if (key === '*') {
+                setOperator('×');
+                return;
+            }
+            
+            if (key === '/') {
+                setOperator('÷');
+                return;
+            }
+            
+            // Equals
+            if (key === '=' || key === 'Enter') {
+                performEquals();
+                return;
+            }
+            
+            // Clear
+            if (key === 'Escape' || key === 'Delete') {
+                clearCalculator();
+                return;
+            }
+            
+            // Backspace
+            if (key === 'Backspace') {
+                deleteLast();
+                return;
+            }
+            
+            // Percentage
+            if (key === '%') {
+                performScientificFunction('percent');
+                return;
+            }
+            
+            // Memory shortcuts
+            if (event.ctrlKey || event.metaKey) {
+                switch (key.toLowerCase()) {
+                    case 'm':
+                        memoryStore();
+                        break;
+                    case 'r':
+                        memoryRecall();
+                        break;
+                    case 'l':
+                        memoryClear();
+                        break;
+                }
+            }
+        }
+        
+        // ===================
+        // INITIALIZATION
+        // ===================
+        function initializeApp() {
+            // Load saved state
+            loadState();
+            
+            // Setup tab switching
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+            });
+            
+            // Setup button event delegation
+            document.addEventListener('click', (event) => {
+                const target = event.target.closest('.key');
+                if (!target) return;
+                
+                // Number buttons
+                if (target.dataset.number) {
+                    appendNumber(target.dataset.number);
+                    return;
+                }
+                
+                // Action buttons
+                if (target.dataset.action) {
+                    const action = target.dataset.action;
+                    
+                    switch (action) {
+                        case '.':
+                            appendDecimal();
+                            break;
+                        case 'clear':
+                            clearCalculator();
+                            break;
+                        case 'clear-entry':
+                            clearEntry();
+                            break;
+                        case 'backspace':
+                            deleteLast();
+                            break;
+                        case 'toggle-sign':
+                            toggleSign();
+                            break;
+                        case 'equals':
+                            performEquals();
+                            break;
+                        case 'add':
+                        case 'subtract':
+                        case 'multiply':
+                        case 'divide':
+                            setOperator(
+                                action === 'add' ? '+' :
+                                action === 'subtract' ? '−' :
+                                action === 'multiply' ? '×' : '÷'
+                            );
+                            break;
+                        default:
+                            // Scientific functions
+                            performScientificFunction(action);
+                    }
+                }
+            });
+            
+            // Setup memory buttons
+            document.querySelectorAll('[data-memory]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const action = btn.dataset.memory;
+                    switch (action) {
+                        case 'mc': memoryClear(); break;
+                        case 'mr': memoryRecall(); break;
+                        case 'm+': memoryAdd(); break;
+                        case 'm-': memorySubtract(); break;
+                        case 'ms': memoryStore(); break;
+                    }
+                });
+            });
+            
+            // Setup control buttons
+            elements.themeToggle.addEventListener('click', toggleTheme);
+            elements.fullscreenToggle.addEventListener('click', toggleFullscreen);
+            elements.helpBtn.addEventListener('click', showHelp);
+            
+            // Setup keyboard support
+            document.addEventListener('keydown', handleKeyboardInput);
+            
+            // Hide loading screen
+            setTimeout(() => {
+                elements.loadingOverlay.style.opacity = '0';
+                setTimeout(() => {
+                    elements.loadingOverlay.style.display = 'none';
+                }, 500);
+            }, 1000);
+            
+            // Auto-save every 30 seconds
+            setInterval(saveState, 30000);
+            
+            // Show welcome message
+            setTimeout(() => {
+                showToast('👋', 'Welcome to CalcPro! Use keyboard or tap buttons.');
+            }, 1500);
+        }
+        
+        // ===================
+        // SERVICE WORKER SCRIPT
+        // ===================
+        const serviceWorkerScript = `
+        const CACHE_NAME = '${CACHE_NAME}';
+        const urlsToCache = [
+            '/',
+            '/index.html',
+            '/manifest.json'
+        ];
+        
+        self.addEventListener('install', event => {
+            event.waitUntil(
+                caches.open(CACHE_NAME)
+                    .then(cache => cache.addAll(urlsToCache))
+            );
+        });
+        
+        self.addEventListener('fetch', event => {
+            event.respondWith(
+                caches.match(event.request)
+                    .then(response => response || fetch(event.request))
+            );
+        });
+        
+        self.addEventListener('activate', event => {
+            event.waitUntil(
+                caches.keys().then(cacheNames => {
+                    return Promise.all(
+                        cacheNames.map(cacheName => {
+                            if (cacheName !== CACHE_NAME) {
+                                return caches.delete(cacheName);
+                            }
+                        })
+                    );
+                })
+            );
+        });
+        `;
+        
+        // Start the app
+        window.addEventListener('DOMContentLoaded', initializeApp);
+        
+        // Log app info
+        console.log(\`
+        🧮 ${APP_NAME} v${APP_VERSION}
+        📱 PWA Ready: \${'serviceWorker' in navigator}
+        🌐 Online: \${navigator.onLine}
+        💾 Storage: \${localStorage ? 'Available' : 'Not available'}
+        \`);
+    </script>
+</body>
+</html>
