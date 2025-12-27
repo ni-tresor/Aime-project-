@@ -3,33 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <!-- PWA Meta Tags -->
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="mobile-web-app-capable" content="yes">
+    <title>CalcPro - Scientific Calculator Web App</title>
+    <meta name="description" content="Professional scientific calculator PWA that works offline">
     <meta name="theme-color" content="#1a1a2e">
-    
-    <!-- SEO & App Info -->
-    <title>CalcPro - Scientific Calculator PWA</title>
-    <meta name="description" content="A professional scientific calculator Progressive Web App that works offline">
-    <meta name="keywords" content="calculator, scientific, PWA, offline, math, web app">
-    
-    <!-- Favicon & App Icons -->
-    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧮</text></svg>">
-    
-    <!-- iOS App Icons -->
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧮</text></svg>">
-    
-    <!-- Manifest -->
-    <link rel="manifest" id="manifest-placeholder">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧮</text></svg>">
     
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            font-family: 'Segoe UI', system-ui, sans-serif;
             -webkit-tap-highlight-color: transparent;
         }
         
@@ -38,27 +22,34 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
             padding: 20px;
-            padding-top: env(safe-area-inset-top);
-            padding-bottom: env(safe-area-inset-bottom);
+            transition: background 0.3s ease;
         }
         
-        /* App Container */
+        .light-mode {
+            background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 50%, #90CAF9 100%) !important;
+        }
+        
         .app-container {
             width: 100%;
             max-width: 500px;
-            background: rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(20px);
             border-radius: 24px;
-            box-shadow: 
-                0 20px 40px rgba(0, 0, 0, 0.4),
-                0 0 0 1px rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4),
+                        0 0 0 1px rgba(255, 255, 255, 0.1);
             overflow: hidden;
             border: 1px solid rgba(255, 255, 255, 0.15);
+            transition: all 0.3s ease;
         }
         
-        /* App Header */
+        .light-mode .app-container {
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1),
+                        0 0 0 1px rgba(0, 0, 0, 0.05);
+        }
+        
         .app-header {
             padding: 20px;
             background: rgba(0, 0, 0, 0.3);
@@ -66,7 +57,11 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            position: relative;
+        }
+        
+        .light-mode .app-header {
+            background: rgba(0, 0, 0, 0.05);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
         }
         
         .app-title {
@@ -78,11 +73,10 @@
             gap: 10px;
         }
         
-        .app-icon {
-            font-size: 1.8rem;
+        .light-mode .app-title {
+            color: #1a1a2e;
         }
         
-        /* App Controls */
         .app-controls {
             display: flex;
             gap: 10px;
@@ -100,6 +94,12 @@
             align-items: center;
             justify-content: center;
             transition: all 0.2s ease;
+            font-size: 1.1rem;
+        }
+        
+        .light-mode .control-btn {
+            background: rgba(0, 0, 0, 0.1);
+            color: #1a1a2e;
         }
         
         .control-btn:hover {
@@ -107,9 +107,12 @@
             transform: scale(1.05);
         }
         
-        /* Install Banner */
+        .light-mode .control-btn:hover {
+            background: rgba(0, 0, 0, 0.2);
+        }
+        
         .install-banner {
-            background: linear-gradient(135deg, #4361ee, #3a0ca3);
+            background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
             color: white;
             padding: 12px 20px;
             display: none;
@@ -119,12 +122,8 @@
         }
         
         @keyframes slideDown {
-            from { transform: translateY(-100%); }
-            to { transform: translateY(0); }
-        }
-        
-        .install-text {
-            font-size: 0.9rem;
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
         
         .install-btn {
@@ -151,12 +150,10 @@
             margin-left: 10px;
         }
         
-        /* Main Content */
         .app-content {
             padding: 20px;
         }
         
-        /* Display */
         .display-container {
             background: rgba(0, 0, 0, 0.4);
             border-radius: 16px;
@@ -169,12 +166,21 @@
             justify-content: space-between;
         }
         
+        .light-mode .display-container {
+            background: rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
         .expression-display {
             color: rgba(255, 255, 255, 0.7);
             font-size: 1.1rem;
             min-height: 27px;
             word-break: break-all;
             text-align: right;
+        }
+        
+        .light-mode .expression-display {
+            color: rgba(0, 0, 0, 0.6);
         }
         
         .result-display {
@@ -184,15 +190,23 @@
             text-align: right;
             word-break: break-all;
             line-height: 1.2;
+            min-height: 60px;
         }
         
-        /* Tabs */
+        .light-mode .result-display {
+            color: #1a1a2e;
+        }
+        
         .tab-container {
             display: flex;
             background: rgba(0, 0, 0, 0.3);
             border-radius: 12px;
             padding: 4px;
             margin-bottom: 20px;
+        }
+        
+        .light-mode .tab-container {
+            background: rgba(0, 0, 0, 0.1);
         }
         
         .tab-btn {
@@ -207,27 +221,28 @@
             transition: all 0.3s ease;
         }
         
+        .light-mode .tab-btn {
+            color: rgba(0, 0, 0, 0.6);
+        }
+        
         .tab-btn.active {
             background: rgba(67, 97, 238, 0.3);
             color: white;
         }
         
-        /* Keyboard */
+        .light-mode .tab-btn.active {
+            background: rgba(67, 97, 238, 0.2);
+            color: #4361ee;
+        }
+        
         .keyboard {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
-            gap: 12px;
-        }
-        
-        /* For mobile, adjust button size */
-        @media (max-width: 500px) {
-            .keyboard {
-                gap: 8px;
-            }
+            gap: 10px;
         }
         
         .key {
-            height: 65px;
+            height: 60px;
             border-radius: 12px;
             border: none;
             font-size: 1.3rem;
@@ -238,26 +253,38 @@
             align-items: center;
             justify-content: center;
             user-select: none;
-            -webkit-user-select: none;
         }
         
         .key:active {
             transform: scale(0.95);
         }
         
-        /* Button Types */
         .number-key {
             background: rgba(255, 255, 255, 0.1);
             color: white;
+        }
+        
+        .light-mode .number-key {
+            background: rgba(0, 0, 0, 0.05);
+            color: #1a1a2e;
         }
         
         .number-key:hover {
             background: rgba(255, 255, 255, 0.15);
         }
         
+        .light-mode .number-key:hover {
+            background: rgba(0, 0, 0, 0.1);
+        }
+        
         .operator-key {
             background: rgba(67, 97, 238, 0.2);
             color: #4cc9f0;
+        }
+        
+        .light-mode .operator-key {
+            background: rgba(67, 97, 238, 0.1);
+            color: #4361ee;
         }
         
         .operator-key:hover {
@@ -267,6 +294,11 @@
         .function-key {
             background: rgba(108, 99, 255, 0.2);
             color: #9d4edd;
+        }
+        
+        .light-mode .function-key {
+            background: rgba(108, 99, 255, 0.1);
+            color: #7209b7;
         }
         
         .function-key:hover {
@@ -279,23 +311,33 @@
             font-size: 1.1rem;
         }
         
+        .light-mode .scientific-key {
+            background: rgba(77, 201, 240, 0.1);
+            color: #4361ee;
+        }
+        
         .scientific-key:hover {
             background: rgba(77, 201, 240, 0.25);
         }
         
         .equals-key {
-            background: linear-gradient(135deg, #4361ee, #3a0ca3);
+            background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
             color: white;
             grid-column: span 2;
         }
         
         .equals-key:hover {
-            background: linear-gradient(135deg, #3a56d4, #2d0a8a);
+            background: linear-gradient(135deg, #3a56d4 0%, #2d0a8a 100%);
         }
         
         .clear-key {
             background: rgba(255, 107, 107, 0.2);
             color: #ff6b6b;
+        }
+        
+        .light-mode .clear-key {
+            background: rgba(255, 107, 107, 0.1);
+            color: #d32f2f;
         }
         
         .clear-key:hover {
@@ -306,7 +348,6 @@
             grid-column: span 2;
         }
         
-        /* Tabs Content */
         .tab-content {
             display: none;
         }
@@ -321,13 +362,17 @@
             to { opacity: 1; }
         }
         
-        /* Memory Panel */
         .memory-panel {
             margin-top: 25px;
             background: rgba(0, 0, 0, 0.3);
             border-radius: 16px;
             padding: 20px;
             border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .light-mode .memory-panel {
+            background: rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.1);
         }
         
         .memory-header {
@@ -343,6 +388,10 @@
             display: flex;
             align-items: center;
             gap: 8px;
+        }
+        
+        .light-mode .memory-header h3 {
+            color: #1a1a2e;
         }
         
         .memory-controls {
@@ -364,6 +413,11 @@
             justify-content: space-between;
         }
         
+        .light-mode .memory-item {
+            color: rgba(0, 0, 0, 0.8);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
         .memory-item:last-child {
             border-bottom: none;
         }
@@ -372,12 +426,19 @@
             color: rgba(255, 255, 255, 0.6);
         }
         
+        .light-mode .memory-expression {
+            color: rgba(0, 0, 0, 0.6);
+        }
+        
         .memory-value {
             color: #4cc9f0;
             font-weight: 500;
         }
         
-        /* Footer */
+        .light-mode .memory-value {
+            color: #4361ee;
+        }
+        
         .app-footer {
             padding: 15px 20px;
             text-align: center;
@@ -387,6 +448,11 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+        }
+        
+        .light-mode .app-footer {
+            color: rgba(0, 0, 0, 0.5);
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
         }
         
         .connection-status {
@@ -409,7 +475,6 @@
             border-radius: 50%;
         }
         
-        /* Toast Notifications */
         .toast {
             position: fixed;
             bottom: 20px;
@@ -436,7 +501,6 @@
             display: flex;
         }
         
-        /* Loading Overlay */
         .loading-overlay {
             position: fixed;
             top: 0;
@@ -471,7 +535,6 @@
             font-size: 1.2rem;
         }
         
-        /* Scrollbar */
         ::-webkit-scrollbar {
             width: 6px;
         }
@@ -485,30 +548,41 @@
             background: rgba(67, 97, 238, 0.5);
             border-radius: 10px;
         }
+        
+        @media (max-width: 500px) {
+            .keyboard {
+                gap: 8px;
+            }
+            
+            .key {
+                height: 55px;
+                font-size: 1.2rem;
+            }
+            
+            .result-display {
+                font-size: 2.2rem;
+            }
+        }
     </style>
 </head>
 <body>
-    <!-- Loading Screen -->
     <div class="loading-overlay" id="loadingOverlay">
         <div class="loader"></div>
         <div class="loading-text">Loading CalcPro...</div>
     </div>
     
-    <!-- App Container -->
     <div class="app-container">
-        <!-- Install Banner -->
         <div class="install-banner" id="installBanner">
-            <div class="install-text">Install CalcPro for a better experience</div>
+            <div class="install-text">Install CalcPro for offline use</div>
             <div>
                 <button class="install-btn" id="installButton">Install</button>
                 <button class="close-install" id="closeInstall">&times;</button>
             </div>
         </div>
         
-        <!-- App Header -->
         <div class="app-header">
             <div class="app-title">
-                <span class="app-icon">🧮</span>
+                <span>🧮</span>
                 <span>CalcPro</span>
             </div>
             <div class="app-controls">
@@ -518,53 +592,44 @@
             </div>
         </div>
         
-        <!-- App Content -->
         <div class="app-content">
-            <!-- Display -->
             <div class="display-container">
                 <div class="expression-display" id="expressionDisplay"></div>
                 <div class="result-display" id="resultDisplay">0</div>
             </div>
             
-            <!-- Tabs -->
             <div class="tab-container">
                 <button class="tab-btn active" data-tab="basic">Basic</button>
                 <button class="tab-btn" data-tab="scientific">Scientific</button>
                 <button class="tab-btn" data-tab="programmer">Programmer</button>
             </div>
             
-            <!-- Basic Calculator -->
             <div class="tab-content active" id="basic-tab">
                 <div class="keyboard" id="basicKeyboard">
-                    <!-- Row 1 -->
                     <button class="key clear-key" data-action="clear">C</button>
                     <button class="key clear-key" data-action="clear-entry">CE</button>
                     <button class="key function-key" data-action="backspace">⌫</button>
                     <button class="key operator-key" data-action="divide">÷</button>
                     <button class="key scientific-key" data-action="sqrt">√</button>
                     
-                    <!-- Row 2 -->
                     <button class="key scientific-key" data-action="square">x²</button>
                     <button class="key number-key" data-number="7">7</button>
                     <button class="key number-key" data-number="8">8</button>
                     <button class="key number-key" data-number="9">9</button>
                     <button class="key operator-key" data-action="multiply">×</button>
                     
-                    <!-- Row 3 -->
                     <button class="key scientific-key" data-action="percent">%</button>
                     <button class="key number-key" data-number="4">4</button>
                     <button class="key number-key" data-number="5">5</button>
                     <button class="key number-key" data-number="6">6</button>
                     <button class="key operator-key" data-action="subtract">−</button>
                     
-                    <!-- Row 4 -->
                     <button class="key scientific-key" data-action="inverse">1/x</button>
                     <button class="key number-key" data-number="1">1</button>
                     <button class="key number-key" data-number="2">2</button>
                     <button class="key number-key" data-number="3">3</button>
                     <button class="key operator-key" data-action="add">+</button>
                     
-                    <!-- Row 5 -->
                     <button class="key scientific-key" data-action="toggle-sign">±</button>
                     <button class="key number-key zero-key" data-number="0">0</button>
                     <button class="key number-key" data-number=".">.</button>
@@ -572,21 +637,92 @@
                 </div>
             </div>
             
-            <!-- Scientific Calculator -->
             <div class="tab-content" id="scientific-tab">
                 <div class="keyboard" id="scientificKeyboard">
-                    <!-- Scientific functions will be loaded here -->
+                    <button class="key scientific-key" data-action="sin">sin</button>
+                    <button class="key scientific-key" data-action="cos">cos</button>
+                    <button class="key scientific-key" data-action="tan">tan</button>
+                    <button class="key scientific-key" data-action="log">log</button>
+                    <button class="key scientific-key" data-action="ln">ln</button>
+                    
+                    <button class="key scientific-key" data-action="pi">π</button>
+                    <button class="key scientific-key" data-action="e">e</button>
+                    <button class="key scientific-key" data-action="factorial">x!</button>
+                    <button class="key scientific-key" data-action="power">x^y</button>
+                    <button class="key scientific-key" data-action="exp">e^x</button>
+                    
+                    <button class="key scientific-key" data-action="left-paren">(</button>
+                    <button class="key scientific-key" data-action="right-paren">)</button>
+                    <button class="key scientific-key" data-action="rad">Rad</button>
+                    <button class="key scientific-key" data-action="deg">Deg</button>
+                    <button class="key scientific-key" data-action="abs">|x|</button>
+                    
+                    <button class="key number-key" data-number="7">7</button>
+                    <button class="key number-key" data-number="8">8</button>
+                    <button class="key number-key" data-number="9">9</button>
+                    <button class="key operator-key" data-action="divide">÷</button>
+                    <button class="key scientific-key" data-action="mod">mod</button>
+                    
+                    <button class="key number-key" data-number="4">4</button>
+                    <button class="key number-key" data-number="5">5</button>
+                    <button class="key number-key" data-number="6">6</button>
+                    <button class="key operator-key" data-action="multiply">×</button>
+                    <button class="key scientific-key" data-action="sqrt">√</button>
+                    
+                    <button class="key number-key" data-number="1">1</button>
+                    <button class="key number-key" data-number="2">2</button>
+                    <button class="key number-key" data-number="3">3</button>
+                    <button class="key operator-key" data-action="subtract">−</button>
+                    <button class="key scientific-key" data-action="square">x²</button>
+                    
+                    <button class="key number-key zero-key" data-number="0">0</button>
+                    <button class="key number-key" data-number=".">.</button>
+                    <button class="key clear-key" data-action="clear">C</button>
+                    <button class="key operator-key" data-action="add">+</button>
+                    <button class="key equals-key" data-action="equals">=</button>
                 </div>
             </div>
             
-            <!-- Programmer Calculator -->
             <div class="tab-content" id="programmer-tab">
                 <div class="keyboard" id="programmerKeyboard">
-                    <!-- Programmer functions will be loaded here -->
+                    <button class="key function-key" data-action="hex">HEX</button>
+                    <button class="key function-key" data-action="dec">DEC</button>
+                    <button class="key function-key" data-action="oct">OCT</button>
+                    <button class="key function-key" data-action="bin">BIN</button>
+                    <button class="key clear-key" data-action="clear">C</button>
+                    
+                    <button class="key scientific-key" data-action="and">AND</button>
+                    <button class="key scientific-key" data-action="or">OR</button>
+                    <button class="key scientific-key" data-action="xor">XOR</button>
+                    <button class="key scientific-key" data-action="not">NOT</button>
+                    <button class="key scientific-key" data-action="lsh">«</button>
+                    
+                    <button class="key number-key" data-number="7">7</button>
+                    <button class="key number-key" data-number="8">8</button>
+                    <button class="key number-key" data-number="9">9</button>
+                    <button class="key operator-key" data-action="divide">÷</button>
+                    <button class="key scientific-key" data-action="rsh">»</button>
+                    
+                    <button class="key number-key" data-number="4">4</button>
+                    <button class="key number-key" data-number="5">5</button>
+                    <button class="key number-key" data-number="6">6</button>
+                    <button class="key operator-key" data-action="multiply">×</button>
+                    <button class="key scientific-key" data-action="mod">mod</button>
+                    
+                    <button class="key number-key" data-number="1">1</button>
+                    <button class="key number-key" data-number="2">2</button>
+                    <button class="key number-key" data-number="3">3</button>
+                    <button class="key operator-key" data-action="subtract">−</button>
+                    <button class="key scientific-key" data-action="nand">NAND</button>
+                    
+                    <button class="key number-key zero-key" data-number="0">0</button>
+                    <button class="key number-key" data-number=".">.</button>
+                    <button class="key function-key" data-action="backspace">⌫</button>
+                    <button class="key operator-key" data-action="add">+</button>
+                    <button class="key equals-key" data-action="equals">=</button>
                 </div>
             </div>
             
-            <!-- Memory Panel -->
             <div class="memory-panel">
                 <div class="memory-header">
                     <h3><span>💾</span> Memory</h3>
@@ -599,40 +735,30 @@
                     </div>
                 </div>
                 <div class="memory-list" id="memoryList">
-                    <!-- Memory items will be added here -->
                     <div class="memory-item">
-                        <span class="memory-expression">Empty</span>
+                        <span class="memory-expression">No memory items</span>
                         <span class="memory-value">0</span>
                     </div>
                 </div>
             </div>
         </div>
         
-        <!-- App Footer -->
         <div class="app-footer">
             <div class="connection-status">
                 <span id="connectionDot" class="online-dot"></span>
                 <span id="connectionText">Online</span>
             </div>
-            <div>CalcPro Web App v1.0</div>
-            <div id="lastSaved">Auto-saved</div>
+            <div>CalcPro v1.0</div>
+            <div id="lastSaved">Ready</div>
         </div>
     </div>
     
-    <!-- Toast Notification -->
     <div class="toast" id="toast">
         <span id="toastIcon">ℹ️</span>
         <span id="toastMessage">Notification</span>
     </div>
 
     <script>
-        // ===================
-        // PWA & APP CONFIG
-        // ===================
-        const APP_NAME = 'CalcPro';
-        const APP_VERSION = '1.0.0';
-        const CACHE_NAME = 'calcpro-v1';
-        
         // ===================
         // APP STATE
         // ===================
@@ -645,70 +771,64 @@
             memoryItems: [],
             lastResult: null,
             isDarkMode: true,
-            currentTab: 'basic'
+            currentTab: 'basic',
+            isRadians: false
         };
         
         // ===================
         // DOM ELEMENTS
         // ===================
-        const elements = {
-            resultDisplay: document.getElementById('resultDisplay'),
-            expressionDisplay: document.getElementById('expressionDisplay'),
-            loadingOverlay: document.getElementById('loadingOverlay'),
-            installBanner: document.getElementById('installBanner'),
-            installButton: document.getElementById('installButton'),
-            closeInstall: document.getElementById('closeInstall'),
-            themeToggle: document.getElementById('themeToggle'),
-            fullscreenToggle: document.getElementById('fullscreenToggle'),
-            helpBtn: document.getElementById('helpBtn'),
-            toast: document.getElementById('toast'),
-            toastIcon: document.getElementById('toastIcon'),
-            toastMessage: document.getElementById('toastMessage'),
-            connectionDot: document.getElementById('connectionDot'),
-            connectionText: document.getElementById('connectionText'),
-            lastSaved: document.getElementById('lastSaved'),
-            memoryList: document.getElementById('memoryList')
-        };
+        const resultDisplay = document.getElementById('resultDisplay');
+        const expressionDisplay = document.getElementById('expressionDisplay');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const installBanner = document.getElementById('installBanner');
+        const installButton = document.getElementById('installButton');
+        const closeInstall = document.getElementById('closeInstall');
+        const themeToggle = document.getElementById('themeToggle');
+        const fullscreenToggle = document.getElementById('fullscreenToggle');
+        const helpBtn = document.getElementById('helpBtn');
+        const toast = document.getElementById('toast');
+        const toastIcon = document.getElementById('toastIcon');
+        const toastMessage = document.getElementById('toastMessage');
+        const connectionDot = document.getElementById('connectionDot');
+        const connectionText = document.getElementById('connectionText');
+        const lastSaved = document.getElementById('lastSaved');
+        const memoryList = document.getElementById('memoryList');
         
         // ===================
         // PWA INSTALLATION
         // ===================
         let deferredPrompt;
         
-        // Listen for beforeinstallprompt event
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
             
-            // Show install banner after 3 seconds
             setTimeout(() => {
                 if (deferredPrompt && !isAppInstalled()) {
-                    elements.installBanner.style.display = 'flex';
+                    installBanner.style.display = 'flex';
                 }
             }, 3000);
         });
         
-        // Install button click
-        elements.installButton.addEventListener('click', async () => {
+        installButton.addEventListener('click', async () => {
             if (!deferredPrompt) return;
             
             deferredPrompt.prompt();
-            const { outcome } = await deferredPrompt.userChoice;
+            const choiceResult = await deferredPrompt.userChoice;
             
-            if (outcome === 'accepted') {
+            if (choiceResult.outcome === 'accepted') {
                 showToast('✅', 'CalcPro installed successfully!');
-                elements.installBanner.style.display = 'none';
+                installBanner.style.display = 'none';
             }
             
             deferredPrompt = null;
         });
         
-        // Close install banner
-        elements.closeInstall.addEventListener('click', () => {
-            elements.installBanner.style.display = 'none';
+        closeInstall.addEventListener('click', () => {
+            installBanner.style.display = 'none';
         });
         
-        // Check if app is installed
         function isAppInstalled() {
             return window.matchMedia('(display-mode: standalone)').matches || 
                    window.navigator.standalone ||
@@ -716,61 +836,16 @@
         }
         
         // ===================
-        // SERVICE WORKER
-        // ===================
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js').then(
-                    (registration) => {
-                        console.log('ServiceWorker registered:', registration.scope);
-                    },
-                    (error) => {
-                        console.log('ServiceWorker registration failed:', error);
-                    }
-                );
-            });
-        }
-        
-        // Create manifest dynamically
-        const manifest = {
-            "name": APP_NAME,
-            "short_name": "CalcPro",
-            "description": "Professional Scientific Calculator PWA",
-            "start_url": ".",
-            "display": "standalone",
-            "background_color": "#1a1a2e",
-            "theme_color": "#1a1a2e",
-            "orientation": "portrait-primary",
-            "icons": [
-                {
-                    "src": "data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧮</text></svg>",
-                    "sizes": "192x192",
-                    "type": "image/svg+xml"
-                },
-                {
-                    "src": "data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧮</text></svg>",
-                    "sizes": "512x512",
-                    "type": "image/svg+xml"
-                }
-            ]
-        };
-        
-        // Create manifest link dynamically
-        const manifestBlob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
-        const manifestURL = URL.createObjectURL(manifestBlob);
-        document.getElementById('manifest-placeholder').href = manifestURL;
-        
-        // ===================
         // OFFLINE DETECTION
         // ===================
         function updateOnlineStatus() {
             if (navigator.onLine) {
-                elements.connectionDot.className = 'online-dot';
-                elements.connectionText.textContent = 'Online';
-                showToast('🌐', 'Back online');
+                connectionDot.className = 'online-dot';
+                connectionText.textContent = 'Online';
+                showToast('🌐', 'Connected to internet');
             } else {
-                elements.connectionDot.className = 'offline-dot';
-                elements.connectionText.textContent = 'Offline';
+                connectionDot.className = 'offline-dot';
+                connectionText.textContent = 'Offline';
                 showToast('📴', 'Working offline');
             }
         }
@@ -851,49 +926,54 @@
                 if (a === 0) throw new Error('Division by zero');
                 return 1 / a;
             }
+            
+            static exp(a) {
+                return Math.exp(a);
+            }
+            
+            static abs(a) {
+                return Math.abs(a);
+            }
+            
+            static mod(a, b) {
+                return a % b;
+            }
         }
         
         // ===================
         // CALCULATOR FUNCTIONS
         // ===================
         function appendNumber(number) {
-            const { currentValue, waitingForOperand } = calculatorState;
-            
-            if (waitingForOperand) {
+            if (calculatorState.waitingForOperand) {
                 calculatorState.currentValue = String(number);
                 calculatorState.waitingForOperand = false;
             } else {
-                calculatorState.currentValue = currentValue === '0' ? 
-                    String(number) : currentValue + number;
+                calculatorState.currentValue = calculatorState.currentValue === '0' ? 
+                    String(number) : calculatorState.currentValue + number;
             }
-            
             updateDisplay();
         }
         
         function appendDecimal() {
-            const { currentValue, waitingForOperand } = calculatorState;
-            
-            if (waitingForOperand) {
+            if (calculatorState.waitingForOperand) {
                 calculatorState.currentValue = '0.';
                 calculatorState.waitingForOperand = false;
-            } else if (!currentValue.includes('.')) {
+            } else if (!calculatorState.currentValue.includes('.')) {
                 calculatorState.currentValue += '.';
             }
-            
             updateDisplay();
         }
         
         function setOperator(nextOperator) {
-            const { currentValue, expression, operator, lastResult } = calculatorState;
-            const inputValue = parseFloat(currentValue);
+            const inputValue = parseFloat(calculatorState.currentValue);
             
-            if (expression && operator && !calculatorState.waitingForOperand) {
-                const currentResult = calculate(lastResult || 0, inputValue, operator);
+            if (calculatorState.expression && calculatorState.operator && !calculatorState.waitingForOperand) {
+                const currentResult = calculate(calculatorState.lastResult || 0, inputValue, calculatorState.operator);
                 calculatorState.currentValue = String(currentResult);
                 calculatorState.lastResult = currentResult;
-                calculatorState.expression = `${currentResult} ${nextOperator}`;
+                calculatorState.expression = currentResult + ' ' + nextOperator;
             } else {
-                calculatorState.expression = `${currentValue} ${nextOperator}`;
+                calculatorState.expression = calculatorState.currentValue + ' ' + nextOperator;
                 calculatorState.lastResult = inputValue;
             }
             
@@ -912,20 +992,18 @@
                 case '×': return CalculatorEngine.multiply(a, b);
                 case '÷': return CalculatorEngine.divide(a, b);
                 case '^': return CalculatorEngine.power(a, b);
+                case 'mod': return CalculatorEngine.mod(a, b);
                 default: return b;
             }
         }
         
         function performEquals() {
-            const { currentValue, expression, operator, lastResult } = calculatorState;
+            if (!calculatorState.operator || calculatorState.waitingForOperand) return;
             
-            if (!operator || calculatorState.waitingForOperand) return;
+            const inputValue = parseFloat(calculatorState.currentValue);
+            const result = calculate(calculatorState.lastResult || 0, inputValue, calculatorState.operator);
             
-            const inputValue = parseFloat(currentValue);
-            const result = calculate(lastResult || 0, inputValue, operator);
-            
-            // Add to memory items
-            addToMemory(`${expression} ${currentValue} = ${result}`);
+            addToMemory(calculatorState.expression + ' ' + calculatorState.currentValue + ' = ' + result);
             
             calculatorState.currentValue = String(result);
             calculatorState.expression = '';
@@ -934,7 +1012,7 @@
             calculatorState.lastResult = result;
             
             updateDisplay();
-            showToast('✅', 'Calculation saved to memory');
+            showToast('✅', 'Calculation saved');
             saveState();
         }
         
@@ -953,30 +1031,24 @@
         }
         
         function deleteLast() {
-            const { currentValue } = calculatorState;
-            
-            if (currentValue.length > 1) {
-                calculatorState.currentValue = currentValue.slice(0, -1);
+            if (calculatorState.currentValue.length > 1) {
+                calculatorState.currentValue = calculatorState.currentValue.slice(0, -1);
             } else {
                 calculatorState.currentValue = '0';
             }
-            
             updateDisplay();
         }
         
         function toggleSign() {
-            const { currentValue } = calculatorState;
-            
-            if (currentValue !== '0') {
-                calculatorState.currentValue = currentValue.startsWith('-') ? 
-                    currentValue.slice(1) : '-' + currentValue;
+            if (calculatorState.currentValue !== '0') {
+                calculatorState.currentValue = calculatorState.currentValue.startsWith('-') ? 
+                    calculatorState.currentValue.slice(1) : '-' + calculatorState.currentValue;
                 updateDisplay();
             }
         }
         
         function performScientificFunction(func) {
-            const { currentValue } = calculatorState;
-            const inputValue = parseFloat(currentValue);
+            const inputValue = parseFloat(calculatorState.currentValue);
             
             try {
                 let result;
@@ -995,13 +1067,13 @@
                         result = CalculatorEngine.inverse(inputValue);
                         break;
                     case 'sin':
-                        result = CalculatorEngine.sin(inputValue, false);
+                        result = CalculatorEngine.sin(inputValue, calculatorState.isRadians);
                         break;
                     case 'cos':
-                        result = CalculatorEngine.cos(inputValue, false);
+                        result = CalculatorEngine.cos(inputValue, calculatorState.isRadians);
                         break;
                     case 'tan':
-                        result = CalculatorEngine.tan(inputValue, false);
+                        result = CalculatorEngine.tan(inputValue, calculatorState.isRadians);
                         break;
                     case 'log':
                         result = CalculatorEngine.log(inputValue);
@@ -1012,18 +1084,58 @@
                     case 'factorial':
                         result = CalculatorEngine.factorial(inputValue);
                         break;
+                    case 'power':
+                        calculatorState.expression = calculatorState.currentValue + ' ^';
+                        calculatorState.lastResult = inputValue;
+                        calculatorState.operator = '^';
+                        calculatorState.waitingForOperand = true;
+                        updateDisplay();
+                        return;
+                    case 'exp':
+                        result = CalculatorEngine.exp(inputValue);
+                        break;
+                    case 'abs':
+                        result = CalculatorEngine.abs(inputValue);
+                        break;
+                    case 'mod':
+                        calculatorState.expression = calculatorState.currentValue + ' mod';
+                        calculatorState.lastResult = inputValue;
+                        calculatorState.operator = 'mod';
+                        calculatorState.waitingForOperand = true;
+                        updateDisplay();
+                        return;
                     case 'pi':
                         result = Math.PI;
                         break;
                     case 'e':
                         result = Math.E;
                         break;
+                    case 'rad':
+                        calculatorState.isRadians = true;
+                        showToast('📐', 'Switched to Radians mode');
+                        return;
+                    case 'deg':
+                        calculatorState.isRadians = false;
+                        showToast('📐', 'Switched to Degrees mode');
+                        return;
+                    case 'left-paren':
+                        if (calculatorState.waitingForOperand) {
+                            calculatorState.currentValue = '(';
+                            calculatorState.waitingForOperand = false;
+                        } else {
+                            calculatorState.currentValue += '(';
+                        }
+                        updateDisplay();
+                        return;
+                    case 'right-paren':
+                        calculatorState.currentValue += ')';
+                        updateDisplay();
+                        return;
                     default:
                         return;
                 }
                 
-                // Add to memory items
-                addToMemory(`${func}(${currentValue}) = ${result}`);
+                addToMemory(func + '(' + calculatorState.currentValue + ') = ' + result);
                 
                 calculatorState.currentValue = String(result);
                 calculatorState.waitingForOperand = true;
@@ -1055,21 +1167,21 @@
         function memoryAdd() {
             const currentValue = parseFloat(calculatorState.currentValue) || 0;
             calculatorState.memory += currentValue;
-            showToast('💾', `Added to memory (M = ${calculatorState.memory})`);
+            showToast('💾', 'Added to memory');
             saveState();
         }
         
         function memorySubtract() {
             const currentValue = parseFloat(calculatorState.currentValue) || 0;
             calculatorState.memory -= currentValue;
-            showToast('💾', `Subtracted from memory (M = ${calculatorState.memory})`);
+            showToast('💾', 'Subtracted from memory');
             saveState();
         }
         
         function memoryStore() {
             const currentValue = parseFloat(calculatorState.currentValue) || 0;
             calculatorState.memory = currentValue;
-            showToast('💾', `Value stored in memory (M = ${calculatorState.memory})`);
+            showToast('💾', 'Value stored in memory');
             saveState();
         }
         
@@ -1080,7 +1192,6 @@
                 timestamp: new Date().toLocaleTimeString()
             });
             
-            // Keep only last 10 items
             if (calculatorState.memoryItems.length > 10) {
                 calculatorState.memoryItems.pop();
             }
@@ -1090,56 +1201,43 @@
         }
         
         function updateMemoryDisplay() {
-            const { memoryItems, memory } = calculatorState;
-            elements.memoryList.innerHTML = '';
+            memoryList.innerHTML = '';
             
-            if (memoryItems.length === 0) {
+            if (calculatorState.memoryItems.length === 0) {
                 const emptyItem = document.createElement('div');
                 emptyItem.className = 'memory-item';
-                emptyItem.innerHTML = `
-                    <span class="memory-expression">Empty</span>
-                    <span class="memory-value">0</span>
-                `;
-                elements.memoryList.appendChild(emptyItem);
+                emptyItem.innerHTML = '<span class="memory-expression">No memory items</span><span class="memory-value">0</span>';
+                memoryList.appendChild(emptyItem);
             } else {
-                memoryItems.forEach(item => {
+                calculatorState.memoryItems.forEach(item => {
                     const memoryItem = document.createElement('div');
                     memoryItem.className = 'memory-item';
-                    memoryItem.innerHTML = `
-                        <span class="memory-expression">${item.expression}</span>
-                        <span class="memory-value">${item.value}</span>
-                    `;
-                    elements.memoryList.appendChild(memoryItem);
+                    memoryItem.innerHTML = '<span class="memory-expression">' + item.expression + '</span><span class="memory-value">' + item.value + '</span>';
+                    memoryList.appendChild(memoryItem);
                 });
             }
-            
-            // Update last saved time
-            elements.lastSaved.textContent = `M: ${memory}`;
         }
         
         // ===================
         // DISPLAY FUNCTIONS
         // ===================
         function updateDisplay() {
-            const { currentValue, expression } = calculatorState;
-            elements.resultDisplay.textContent = formatNumber(currentValue);
-            elements.expressionDisplay.textContent = expression;
+            resultDisplay.textContent = formatNumber(calculatorState.currentValue);
+            expressionDisplay.textContent = calculatorState.expression;
         }
         
         function formatNumber(number) {
             const num = parseFloat(number);
             if (isNaN(num)) return '0';
             
-            // Format large numbers with scientific notation
             if (Math.abs(num) >= 1e12 || (Math.abs(num) < 1e-6 && num !== 0)) {
                 return num.toExponential(6).replace('e+', 'e');
             }
             
-            // Format regular numbers
             const str = num.toString();
             if (str.includes('.')) {
-                const [integer, decimal] = str.split('.');
-                if (decimal.length > 8) {
+                const parts = str.split('.');
+                if (parts[1].length > 8) {
                     return num.toFixed(8).replace(/\.?0+$/, '');
                 }
             }
@@ -1151,24 +1249,23 @@
         // UI FUNCTIONS
         // ===================
         function showToast(icon, message) {
-            elements.toastIcon.textContent = icon;
-            elements.toastMessage.textContent = message;
-            elements.toast.classList.add('show');
+            toastIcon.textContent = icon;
+            toastMessage.textContent = message;
+            toast.classList.add('show');
             
             setTimeout(() => {
-                elements.toast.classList.remove('show');
+                toast.classList.remove('show');
             }, 3000);
         }
         
         function toggleTheme() {
             calculatorState.isDarkMode = !calculatorState.isDarkMode;
-            const body = document.body;
             
             if (calculatorState.isDarkMode) {
-                body.style.background = 'linear-gradient(135deg, #0f0c29, #302b63, #24243e)';
+                document.body.classList.remove('light-mode');
                 showToast('🌙', 'Dark mode enabled');
             } else {
-                body.style.background = 'linear-gradient(135deg, #E3F2FD, #BBDEFB, #90CAF9)';
+                document.body.classList.add('light-mode');
                 showToast('☀️', 'Light mode enabled');
             }
             
@@ -1186,14 +1283,13 @@
         }
         
         function showHelp() {
-            showToast('📘', 'Tap buttons or use keyboard. Install for offline use.');
+            showToast('📘', 'Use buttons or keyboard. Install for offline use.');
         }
         
         // ===================
         // TAB MANAGEMENT
         // ===================
         function switchTab(tabName) {
-            // Update tab buttons
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.classList.remove('active');
                 if (btn.dataset.tab === tabName) {
@@ -1201,10 +1297,9 @@
                 }
             });
             
-            // Update tab content
             document.querySelectorAll('.tab-content').forEach(content => {
                 content.classList.remove('active');
-                if (content.id === `${tabName}-tab`) {
+                if (content.id === tabName + '-tab') {
                     content.classList.add('active');
                 }
             });
@@ -1219,7 +1314,11 @@
         function saveState() {
             try {
                 localStorage.setItem('calcpro-state', JSON.stringify(calculatorState));
-                elements.lastSaved.textContent = `Saved ${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+                lastSaved.textContent = 'Saved';
+                
+                setTimeout(() => {
+                    lastSaved.textContent = 'Ready';
+                }, 2000);
             } catch (error) {
                 console.log('Failed to save state:', error);
             }
@@ -1238,7 +1337,6 @@
                         toggleTheme();
                     }
                     
-                    // Switch to saved tab
                     if (calculatorState.currentTab) {
                         switchTab(calculatorState.currentTab);
                     }
@@ -1254,25 +1352,21 @@
         function handleKeyboardInput(event) {
             const key = event.key;
             
-            // Prevent default for calculator keys
             if (/[\d+\-*/.=]/.test(key) || 
                 ['Enter', 'Escape', 'Backspace', '%'].includes(key)) {
                 event.preventDefault();
             }
             
-            // Numbers
             if (key >= '0' && key <= '9') {
                 appendNumber(key);
                 return;
             }
             
-            // Decimal
             if (key === '.' || key === ',') {
                 appendDecimal();
                 return;
             }
             
-            // Operators
             if (key === '+') {
                 setOperator('+');
                 return;
@@ -1293,43 +1387,30 @@
                 return;
             }
             
-            // Equals
             if (key === '=' || key === 'Enter') {
                 performEquals();
                 return;
             }
             
-            // Clear
             if (key === 'Escape' || key === 'Delete') {
                 clearCalculator();
                 return;
             }
             
-            // Backspace
             if (key === 'Backspace') {
                 deleteLast();
                 return;
             }
             
-            // Percentage
             if (key === '%') {
                 performScientificFunction('percent');
                 return;
             }
             
-            // Memory shortcuts
             if (event.ctrlKey || event.metaKey) {
-                switch (key.toLowerCase()) {
-                    case 'm':
-                        memoryStore();
-                        break;
-                    case 'r':
-                        memoryRecall();
-                        break;
-                    case 'l':
-                        memoryClear();
-                        break;
-                }
+                if (key === 'm') memoryStore();
+                if (key === 'r') memoryRecall();
+                if (key === 'l') memoryClear();
             }
         }
         
@@ -1337,26 +1418,21 @@
         // INITIALIZATION
         // ===================
         function initializeApp() {
-            // Load saved state
             loadState();
             
-            // Setup tab switching
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.addEventListener('click', () => switchTab(btn.dataset.tab));
             });
             
-            // Setup button event delegation
             document.addEventListener('click', (event) => {
                 const target = event.target.closest('.key');
                 if (!target) return;
                 
-                // Number buttons
                 if (target.dataset.number) {
                     appendNumber(target.dataset.number);
                     return;
                 }
                 
-                // Action buttons
                 if (target.dataset.action) {
                     const action = target.dataset.action;
                     
@@ -1383,108 +1459,51 @@
                         case 'subtract':
                         case 'multiply':
                         case 'divide':
-                            setOperator(
-                                action === 'add' ? '+' :
-                                action === 'subtract' ? '−' :
-                                action === 'multiply' ? '×' : '÷'
-                            );
+                            setOperator(action === 'add' ? '+' : action === 'subtract' ? '−' : action === 'multiply' ? '×' : '÷');
                             break;
                         default:
-                            // Scientific functions
                             performScientificFunction(action);
                     }
                 }
             });
             
-            // Setup memory buttons
             document.querySelectorAll('[data-memory]').forEach(btn => {
                 btn.addEventListener('click', () => {
                     const action = btn.dataset.memory;
-                    switch (action) {
-                        case 'mc': memoryClear(); break;
-                        case 'mr': memoryRecall(); break;
-                        case 'm+': memoryAdd(); break;
-                        case 'm-': memorySubtract(); break;
-                        case 'ms': memoryStore(); break;
-                    }
+                    if (action === 'mc') memoryClear();
+                    if (action === 'mr') memoryRecall();
+                    if (action === 'm+') memoryAdd();
+                    if (action === 'm-') memorySubtract();
+                    if (action === 'ms') memoryStore();
                 });
             });
             
-            // Setup control buttons
-            elements.themeToggle.addEventListener('click', toggleTheme);
-            elements.fullscreenToggle.addEventListener('click', toggleFullscreen);
-            elements.helpBtn.addEventListener('click', showHelp);
+            themeToggle.addEventListener('click', toggleTheme);
+            fullscreenToggle.addEventListener('click', toggleFullscreen);
+            helpBtn.addEventListener('click', showHelp);
             
-            // Setup keyboard support
             document.addEventListener('keydown', handleKeyboardInput);
             
-            // Hide loading screen
             setTimeout(() => {
-                elements.loadingOverlay.style.opacity = '0';
+                loadingOverlay.style.opacity = '0';
                 setTimeout(() => {
-                    elements.loadingOverlay.style.display = 'none';
+                    loadingOverlay.style.display = 'none';
                 }, 500);
-            }, 1000);
+            }, 800);
             
-            // Auto-save every 30 seconds
             setInterval(saveState, 30000);
             
-            // Show welcome message
             setTimeout(() => {
-                showToast('👋', 'Welcome to CalcPro! Use keyboard or tap buttons.');
-            }, 1500);
+                showToast('👋', 'Welcome to CalcPro!');
+            }, 1000);
+            
+            console.log('CalcPro Web App initialized successfully!');
+            console.log('Service Worker support:', 'serviceWorker' in navigator);
+            console.log('Local Storage support:', localStorage ? 'Yes' : 'No');
+            console.log('Online:', navigator.onLine);
         }
         
-        // ===================
-        // SERVICE WORKER SCRIPT
-        // ===================
-        const serviceWorkerScript = `
-        const CACHE_NAME = '${CACHE_NAME}';
-        const urlsToCache = [
-            '/',
-            '/index.html',
-            '/manifest.json'
-        ];
-        
-        self.addEventListener('install', event => {
-            event.waitUntil(
-                caches.open(CACHE_NAME)
-                    .then(cache => cache.addAll(urlsToCache))
-            );
-        });
-        
-        self.addEventListener('fetch', event => {
-            event.respondWith(
-                caches.match(event.request)
-                    .then(response => response || fetch(event.request))
-            );
-        });
-        
-        self.addEventListener('activate', event => {
-            event.waitUntil(
-                caches.keys().then(cacheNames => {
-                    return Promise.all(
-                        cacheNames.map(cacheName => {
-                            if (cacheName !== CACHE_NAME) {
-                                return caches.delete(cacheName);
-                            }
-                        })
-                    );
-                })
-            );
-        });
-        `;
-        
-        // Start the app
         window.addEventListener('DOMContentLoaded', initializeApp);
-        
-        // Log app info
-        console.log(\`
-        🧮 ${APP_NAME} v${APP_VERSION}
-        📱 PWA Ready: \${'serviceWorker' in navigator}
-        🌐 Online: \${navigator.onLine}
-        💾 Storage: \${localStorage ? 'Available' : 'Not available'}
-        \`);
     </script>
 </body>
 </html>
